@@ -255,9 +255,13 @@
       h1('바코드를', '비춰 주세요.', 'Point your camera at the barcode') +
       '<div class="in" style="margin-top:18px;border-radius:26px;overflow:hidden;position:relative;aspect-ratio:4/3">' +
       '<div id="reader" style="width:100%;height:100%"></div>' +
+      '<div id="camguide" style="display:none;position:absolute;left:6%;right:6%;top:28%;bottom:28%;border:3px solid rgba(255,255,255,.9);border-radius:16px;box-shadow:0 0 0 999px rgba(20,36,28,.28);pointer-events:none"></div>' +
+      '<div id="camhint" style="display:none;position:absolute;left:0;right:0;bottom:10px;text-align:center;color:#fff;font-size:12.5px;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.5)">바코드를 네모 안에 가로로 크게 맞춰 주세요</div>' +
       '<div id="camcover" style="position:absolute;inset:0;background:url(../assets/img/scan_photo.jpg) center/cover;display:flex;align-items:flex-end;justify-content:center;padding:16px">' +
       '<button class="btn lime" data-act="cam" style="width:auto;padding:0 22px;height:50px">' + ic('camera', 20, '#fff') + ' 카메라 켜기</button></div></div>' +
-      '<p class="mute" style="font-size:12px;margin:8px 4px 0">카메라 영상은 이 기기 안에서만 바코드 인식에 쓰고, 어디에도 저장하거나 보내지 않아요.</p>' +
+      '<label class="up" style="display:flex;align-items:center;justify-content:center;gap:8px;height:48px;margin-top:12px;border-radius:18px;font-size:14px;font-weight:700;color:var(--forest);cursor:pointer">' + ic('camera', 18, 'var(--forest)') + ' 잘 안 되면: 바코드 사진 찍어서 인식' +
+      '<input type="file" accept="image/*" capture="environment" data-photo style="display:none"></label>' +
+      '<p class="mute" style="font-size:12px;margin:8px 4px 0">카메라 영상과 사진은 이 기기 안에서만 바코드 인식에 쓰고, 어디에도 저장하거나 보내지 않아요.</p>' +
       '<form data-form="code" class="up" style="display:flex;gap:8px;padding:8px;margin-top:16px;border-radius:22px">' +
       '<input id="codein" inputmode="numeric" autocomplete="off" placeholder="바코드 숫자 13자리 입력" aria-label="바코드 숫자" class="in" style="flex:1;border:0;height:46px;padding:0 14px;font-size:15px;border-radius:16px;color:var(--ink);font-family:inherit">' +
       '<button class="btn fill" style="width:auto;flex:none;white-space:nowrap;padding:0 18px;height:46px;font-size:14px">찾기</button></form>' +
@@ -513,8 +517,13 @@
   };
 
   // ───────── 라우터
-  var scanner = null, sheetTimer = null;
-  function stopCam() { if (scanner) { try { scanner.stop().catch(function () {}); } catch (e) {} scanner = null; } }
+  var cam = null, sheetTimer = null;
+  function stopCam() {
+    if (!cam) return;
+    cam.on = false; clearTimeout(cam.timer);
+    try { cam.stream.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
+    cam = null;
+  }
 
   function render(keep) {
     stopCam();
@@ -577,24 +586,102 @@
     go(p ? '/p/' + p.id : '/nf/' + code);
   }
 
+  // ───────── 바코드 인식
+  // 폰 브라우저에 내장 인식기(BarcodeDetector)가 있으면 그걸 쓰고, 없으면(아이폰 등) zxing-wasm 인식기를 우리 사이트에서 불러와요.
+  var FMTS = ['ean_13', 'ean_8', 'upc_a', 'upc_e'];
+  var detP = null;
+  function vendor(f) { return new URL('../assets/vendor/' + f, location.href).href; }
+  function loadZX() {
+    return new Promise(function (ok, no) {
+      if (window.BarcodeDetectionAPI) return ok();
+      var s = document.createElement('script');
+      s.src = vendor('barcode-detector-3.2.3.js');
+      s.onload = ok; s.onerror = no;
+      document.head.appendChild(s);
+    }).then(function () {
+      var A = window.BarcodeDetectionAPI;
+      A.setZXingModuleOverrides({ locateFile: function (path, prefix) { return /\.wasm$/.test(path) ? vendor('zxing_reader.wasm') : prefix + path; } });
+      return { d: new A.BarcodeDetector({ formats: FMTS }), native: false };
+    });
+  }
+  function detector() {
+    if (detP) return detP;
+    detP = (('BarcodeDetector' in window) && window.BarcodeDetector.getSupportedFormats
+      ? window.BarcodeDetector.getSupportedFormats().then(function (s) {
+          return s.indexOf('ean_13') >= 0 ? { d: new window.BarcodeDetector({ formats: FMTS }), native: true } : loadZX();
+        }).catch(loadZX)
+      : loadZX());
+    detP.catch(function () { detP = null; });
+    return detP;
+  }
+  function pick(list) {
+    var codes = (list || []).map(function (b) { return String(b.rawValue || '').replace(/\D/g, ''); }).filter(Boolean);
+    for (var i = 0; i < codes.length; i++) if (byCode[codes[i]]) return codes[i];
+    return codes[0] || '';
+  }
+  function found(code) { stopCam(); if (navigator.vibrate) navigator.vibrate(60); st.scanned = (st.scanned || 0) + 1; save(); lookup(code); }
+  function inApp() { return /KAKAOTALK|everytime|Instagram|FBAN|FBAV|NAVER|Line\//i.test(navigator.userAgent); }
+  function camFail() {
+    toast(inApp() ? '앱 안 브라우저에서는 카메라가 막힐 수 있어요. 오른쪽 위 메뉴 → \'다른 브라우저로 열기\' 하거나, 아래 \'사진 찍어서 인식\'을 써 주세요.'
+      : '카메라를 열 수 없어요. 아래 \'사진 찍어서 인식\'이나 숫자 입력을 써 주세요.');
+  }
+
   function startCam() {
+    if (cam) return;
+    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) return camFail();
     var cover = document.getElementById('camcover');
-    function run() {
-      try {
-        var F = window.Html5QrcodeSupportedFormats;
-        scanner = new window.Html5Qrcode('reader', { formatsToSupport: [F.EAN_13, F.EAN_8, F.UPC_A, F.UPC_E], verbose: false });
-        scanner.start({ facingMode: 'environment' }, { fps: 10, qrbox: function (w, h) { return { width: Math.min(300, w * 0.85), height: Math.min(150, h * 0.5) }; } },
-          function (text) { stopCam(); if (navigator.vibrate) navigator.vibrate(60); lookup(text); }, function () {})
-          .then(function () { if (cover) cover.style.display = 'none'; })
-          .catch(function () { toast('카메라를 열 수 없어요. 숫자를 입력하거나 체험용 제품을 눌러 주세요.'); });
-      } catch (e) { toast('카메라를 열 수 없어요. 숫자를 입력해 주세요.'); }
+    detector().catch(function () {}); // 미리 불러오기
+    navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } } })
+      .then(function (stream) {
+        var box = document.getElementById('reader');
+        if (!box) { stream.getTracks().forEach(function (t) { t.stop(); }); return; }
+        var v = document.createElement('video');
+        v.setAttribute('playsinline', ''); v.muted = true; v.autoplay = true;
+        v.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block';
+        v.srcObject = stream; box.innerHTML = ''; box.appendChild(v);
+        var tr = stream.getVideoTracks()[0];
+        try { tr.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(function () {}); } catch (e) {}
+        cam = { stream: stream, video: v, on: true, timer: 0, last: '', canvas: document.createElement('canvas') };
+        v.play().catch(function () {});
+        if (cover) cover.style.display = 'none';
+        ['camguide', 'camhint'].forEach(function (id) { var el = document.getElementById(id); if (el) el.style.display = 'block'; });
+        return detector().then(function (D) { tick(D); });
+      })
+      .catch(function () { stopCam(); camFail(); });
+  }
+  function tick(D) {
+    if (!cam || !cam.on) return;
+    var c = cam, v = c.video;
+    function next() { if (cam === c && c.on) c.timer = setTimeout(function () { tick(D); }, D.native ? 120 : 200); }
+    if (v.readyState < 2 || !v.videoWidth) return next();
+    var src = v;
+    if (!D.native) {
+      // 가운데 가로 띠만 원본 해상도로 잘라서 인식 (빠르고 정확)
+      var W = v.videoWidth, H = v.videoHeight, sh = Math.round(H * 0.5), sy = Math.round((H - sh) / 2);
+      c.canvas.width = W; c.canvas.height = sh;
+      c.canvas.getContext('2d').drawImage(v, 0, sy, W, sh, 0, 0, W, sh);
+      src = c.canvas;
     }
-    if (window.Html5Qrcode) return run();
-    var s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js';
-    s.onload = run;
-    s.onerror = function () { toast('스캐너를 불러오지 못했어요. 숫자를 입력해 주세요.'); };
-    document.head.appendChild(s);
+    D.d.detect(src).then(function (list) {
+      var code = pick(list);
+      // 잘못 읽는 걸 막으려고 같은 숫자가 두 번 연속 나오면 확정 (DB에 있는 바코드는 바로 확정)
+      if (code && (byCode[code] || code === c.last)) return found(code);
+      c.last = code || c.last;
+      next();
+    }).catch(next);
+  }
+  function scanPhoto(file) {
+    if (!file) return;
+    toast('사진에서 바코드를 찾는 중…');
+    detector().then(function (D) {
+      return (window.createImageBitmap ? createImageBitmap(file) : new Promise(function (ok, no) {
+        var img = new Image(); img.onload = function () { ok(img); }; img.onerror = no; img.src = URL.createObjectURL(file);
+      })).then(function (bm) { return D.d.detect(bm); });
+    }).then(function (list) {
+      var code = pick(list);
+      if (code) found(code);
+      else toast('바코드를 찾지 못했어요. 바코드가 화면에 크게, 흔들리지 않게 다시 찍어 주세요.');
+    }).catch(function () { toast('사진을 읽지 못했어요. 바코드 숫자를 입력해 주세요.'); });
   }
 
   // ───────── 이벤트
@@ -622,6 +709,7 @@
   });
   document.addEventListener('change', function (e) {
     var t = e.target;
+    if (t.hasAttribute('data-photo')) { scanPhoto(t.files && t.files[0]); t.value = ''; return; }
     if (t.hasAttribute('data-cmp')) {
       var q = new URLSearchParams((location.hash.split('?')[1]) || '');
       q.set(t.getAttribute('data-cmp'), t.value);
