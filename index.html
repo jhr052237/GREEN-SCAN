@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>그린스캔 GreenScan</title>
+<meta name="description" content="화장품 바코드를 찍으면 진짜 비건인지, 친환경인지 근거와 함께 보여주는 그린스캔. 지금 웹에서 체험해 보세요.">
+<meta property="og:title" content="그린스캔 · 찍으면 보여요">
+<meta property="og:description" content="화장품 바코드를 찍으면 비건 인증과 친환경 근거를 점수와 함께 보여드려요.">
+<meta property="og:image" content="assets/img/shot_result.jpg">
+<meta name="theme-color" content="#EDF2EC">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/gs.css">
+<style>
+  body { background: linear-gradient(180deg, #F1F5EF 0%, #EAF0E8 40%, #E8EEE6 100%); }
+  .w { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+  nav.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: rgba(241,245,239,.86); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  nav.bar .w { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+  nav.bar .links { display: flex; gap: 26px; font-size: 14.5px; }
+  nav.bar .links a { text-decoration: none; color: var(--ink2); }
+  section { padding: 90px 0; }
+  .h2 { font-family: var(--serif); font-weight: 600; font-size: 40px; line-height: 1.28; letter-spacing: -.02em; margin: 8px 0 0; }
+  .h2 span { color: var(--sage-d); }
+  .lead { font-size: 17px; color: var(--ink2); line-height: 1.7; margin: 16px 0 0; max-width: 620px; }
+  .grid2 { display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .phone { width: 300px; border-radius: 46px; padding: 10px; background: linear-gradient(150deg, #3A4440, #171D1B 45%, #2A3330); box-shadow: 0 40px 70px -30px rgba(40,64,50,.55), 0 14px 26px -14px rgba(40,64,50,.35); flex: none; }
+  .phone img { border-radius: 37px; width: 100%; }
+  .card { padding: 26px; }
+  .num { font-family: var(--serif); font-size: 46px; line-height: 1; }
+  .btns { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
+  .btns .btn { width: auto; padding: 0 28px; }
+  .photo { border-radius: 22px; overflow: hidden; background: #fff; }
+  .photo img { width: 100%; height: 200px; object-fit: contain; background: #fff; }
+  .rule { display: flex; gap: 14px; padding: 14px 0; border-top: 1px solid var(--line); }
+  .rule:first-child { border-top: 0; }
+  details { padding: 18px 22px; margin-top: 14px; }
+  summary { cursor: pointer; font-weight: 700; font-size: 16px; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+  summary::-webkit-details-marker { display: none; }
+  details p { color: var(--ink2); margin: 10px 0 0; font-size: 15px; }
+  footer { padding: 40px 0 60px; font-size: 13.5px; color: var(--mute); }
+  @media (max-width: 900px) {
+    nav.bar .links { display: none; }
+    section { padding: 64px 0; }
+    .h2 { font-size: 30px; }
+    .grid2, .grid3 { grid-template-columns: 1fr; gap: 28px; }
+    .phone { width: 260px; margin: 0 auto; }
+    .hero-phones { justify-content: center !important; }
+    .hero-phones .phone:nth-child(1) { display: none; }
+    .hero-phones .phone:nth-child(2) { margin-top: 0; }
+    .w { padding: 0 18px; }
+  }
+</style>
+</head>
+<body>
+<nav class="bar"><div class="w">
+  <a href="#" style="display:flex;align-items:center;gap:8px;text-decoration:none"><span class="fill circ" style="width:32px;height:32px"><svg class="ic" viewBox="0 0 24 24" style="font-size:17px;color:#fff"><path d="M5 19c0-8 5-14 15-14 0 10-6 15-14 15"/><path d="M5 19c3-4 6-7 10-9"/></svg></span><span class="serif" style="font-size:19px">그린스캔</span><span class="en" style="font-size:10.5px">GreenScan</span></a>
+  <div class="links"><a href="#criteria">점수 기준</a><a href="#vegan">진짜 비건 구분</a><a href="#field">실물 조사</a><a href="#points">포인트</a><a href="#faq">자주 묻는 질문</a></div>
+  <a href="app/index.html" class="pill fill" style="height:40px;padding:0 18px;font-size:14px;font-weight:700;text-decoration:none">체험하기</a>
+</div></nav>
+
+<!-- 1. 첫 화면: 수치 없이 서비스가 무엇인지만 -->
+<section style="padding-top:56px"><div class="w grid2">
+  <div>
+    <span class="pill" style="height:30px;padding:0 14px;font-size:12.5px;font-weight:700;color:var(--lime-d);background:var(--lime-l)">화장품 바코드 · 비건 · ESG 근거</span>
+    <div class="en" style="margin-top:22px">Scan a barcode. See the proof behind “vegan” and “eco”.</div>
+    <h1 class="serif" style="font-size:52px;line-height:1.22;margin:10px 0 0;letter-spacing:-.03em">찍으면 보여요.<br><span class="hl">진짜 비건인지,<br>친환경인지.</span></h1>
+    <p class="lead">화장품 바코드를 찍으면 인증 마크와 포장 표시를 근거로 ESG 확인 점수를 보여드려요. 점수마다 왜 그렇게 나왔는지까지요.</p>
+    <div class="btns"><a class="btn fill" href="app/index.html">웹에서 바로 체험하기</a><a class="btn sec" href="#criteria">점수 기준 먼저 보기</a></div>
+    <p class="mute" style="font-size:13px;margin-top:14px">설치 없이 폰 브라우저에서 바로 열려요. 가입 없이 3번까지 무료예요.</p>
+  </div>
+  <div class="hero-phones" style="display:flex;gap:22px;justify-content:flex-end;align-items:flex-start">
+    <div class="phone" style="margin-top:46px"><img src="assets/img/shot_home.jpg" alt="그린스캔 홈 화면"></div>
+    <div class="phone"><img src="assets/img/shot_result.jpg" alt="어뮤즈 쿠션 스캔 결과 화면: 비건 인증 확인, 65점"></div>
+  </div>
+</div></section>
+
+<!-- 2. 점수 기준 (뒤에 있던 내용을 앞으로) -->
+<section id="criteria"><div class="w">
+  <div class="en">How the score works</div>
+  <h2 class="h2">점수에는 <span>모두 이유가 있어요.</span></h2>
+  <p class="lead">그린스캔 점수는 제품이 좋다, 나쁘다가 아니라 <b>비건·친환경 근거가 얼마나 확인됐는지</b>를 보여줘요. ESG를 몰라도 한 줄이면 돼요.</p>
+  <div class="grid3" style="margin-top:36px">
+    <div class="up card"><div class="fill circ" style="width:52px;height:52px;font-weight:800;font-size:20px">E</div><div class="serif" style="font-size:22px;margin-top:16px">환경 <span class="en">Environment · 45%</span></div><p style="font-size:16px;font-weight:700;margin:8px 0 4px">포장이 쓰레기를 덜 남기나요?</p><p class="ink2" style="font-size:14px;margin:0">재활용 쉬움 25 · 리필 25 · 재생 원료 용기 20 · FSC 종이 15 · SOY INK 15</p></div>
+    <div class="up card"><div class="fill circ" style="width:52px;height:52px;font-weight:800;font-size:20px">S</div><div class="serif" style="font-size:22px;margin-top:16px">사회 <span class="en">Social · 30%</span></div><p style="font-size:16px;font-weight:700;margin:8px 0 4px">동물을 해치지 않고 만들었나요?</p><p class="ink2" style="font-size:14px;margin:0">동물성 원료 없음 50 · 동물실험 안 함 50 (제3자 비건 인증으로 확인)</p></div>
+    <div class="up card"><div class="fill circ" style="width:52px;height:52px;font-weight:800;font-size:20px">G</div><div class="serif" style="font-size:22px;margin-top:16px">지배구조 <span class="en">Governance · 25%</span></div><p style="font-size:16px;font-weight:700;margin:8px 0 4px">회사가 근거를 공개하나요?</p><p class="ink2" style="font-size:14px;margin:0">인증 번호 조회 가능 40 · 재활용 등급 공개 30 · 브랜드 소통·정정 대응 30</p></div>
+  </div>
+  <div class="grid2" style="margin-top:28px;align-items:stretch">
+    <div class="up card">
+      <div class="en">Example</div><div class="serif" style="font-size:22px;margin-top:4px">어뮤즈 쿠션 65점은 이렇게 나와요</div>
+      <div style="font-size:16px;line-height:2;margin-top:12px">환경 <b>55</b> × 45% = 24.8<br>사회 <b>100</b> × 30% = 30.0<br>지배구조 <b>40</b> × 25% = 10.0</div>
+      <div class="serif" style="font-size:30px;margin-top:6px">= 65점 <span style="font-size:16px;color:var(--forest)">근거 양호</span></div>
+      <p class="ink2" style="font-size:14px;margin:10px 0 0">비건 인증(weVegan®), 리필, FSC 종이, SOY INK는 확인했어요. 재활용 등급·재생 원료·브랜드 소통은 아직 확인 못 해서 비어 있어요.</p>
+    </div>
+    <div class="up card">
+      <div class="rule"><div class="ups circ" style="width:34px;height:34px;font-weight:800;color:var(--forest)">1</div><div><b>확인한 근거만.</b> <span class="ink2">포장과 공식 자료에서 확인한 것만 점수에 넣어요.</span></div></div>
+      <div class="rule"><div class="ups circ" style="width:34px;height:34px;font-weight:800;color:var(--forest)">2</div><div><b>없으면 '정보 없음'.</b> <span class="ink2">0점이지만 '나쁨'이 아니라 '확인할 근거 없음'이에요.</span></div></div>
+      <div class="rule"><div class="ups circ" style="width:34px;height:34px;font-weight:800;color:var(--forest)">3</div><div><b>같은 근거는 한 번만.</b> <span class="ink2">인증 마크 가산점을 따로 더하지 않고 해당 항목 점수로 넣어요.</span></div></div>
+      <div class="rule"><div class="ups circ" style="width:34px;height:34px;font-weight:800;color:var(--forest)">4</div><div><b>동점이면 순서대로.</b> <span class="ink2">내 기준 점수 → 확인한 근거 수 → 같은 종류 평균.</span></div></div>
+      <div class="rule"><div class="ups circ" style="width:34px;height:34px;font-weight:800;color:var(--forest)">5</div><div><b>광고와 무관.</b> <span class="ink2">광고·제휴를 해도 점수는 바뀌지 않아요.</span></div></div>
+    </div>
+  </div>
+  <p class="mute" style="font-size:13px;margin-top:14px">비중(45·30·25)은 시안이에요. 소비자 설문에서 항목별 중요도를 물어 다시 정해요.</p>
+</div></section>
+
+<!-- 3. 진짜 비건 구분 -->
+<section id="vegan"><div class="w">
+  <div class="en">Certified vs. just claimed</div>
+  <h2 class="h2">같은 '비건'도 <span>근거는 달라요.</span></h2>
+  <p class="lead">제3자 기관이 심사한 인증 마크와 브랜드가 직접 쓴 문구는 매장에서 거의 똑같아 보여요. 그린스캔은 둘을 나눠서 보여드려요.</p>
+  <div class="grid3" style="margin-top:36px">
+    <div class="up card" style="padding:14px 14px 22px"><div class="photo"><img src="assets/img/quiz_vlabel.jpg" alt="V-Label 인증 마크 실물 사진"></div><div style="padding:0 8px"><span class="chip ok" style="margin-top:14px">인증 확인 · 100점</span><div class="serif" style="font-size:19px;margin-top:8px">V-Label · weVegan®</div><p class="ink2" style="font-size:14px;margin:6px 0 0">인증 기관이 원료 출처, 동물실험, 교차오염까지 심사해요. 사회(S) 100점.</p></div></div>
+    <div class="up card" style="padding:14px 14px 22px"><div class="photo"><img src="assets/img/mark_phrase.jpg" alt="브랜드 자체 'I'M VEGAN' 문구 사진" style="background:#9CB9C6"></div><div style="padding:0 8px"><span class="chip neg" style="margin-top:14px">표기만 · 15점</span><div class="serif" style="font-size:19px;margin-top:8px">'I'M VEGAN' 같은 문구</div><p class="ink2" style="font-size:14px;margin:6px 0 0">인증 기관 이름이 없어서 누가 확인했는지 알 수 없어요. 원료 항목에서 15점만 줘요.</p></div></div>
+    <div class="up card" style="padding:14px 14px 22px"><div class="photo"><img src="assets/img/mark_hard.jpg" alt="비건 인증 핸드크림 튜브의 '재활용 어려움' 표시"></div><div style="padding:0 8px"><span class="chip none" style="margin-top:14px">비건 ≠ 친환경</span><div class="serif" style="font-size:19px;margin-top:8px">비건 인증, 그런데 '재활용 어려움'</div><p class="ink2" style="font-size:14px;margin:6px 0 0">비건 인증 핸드크림 3개 모두 튜브가 '재활용 어려움'이었어요. 그래서 비건과 친환경을 따로 봐요.</p></div></div>
+  </div>
+</div></section>
+
+<!-- 4. 실물 조사 -->
+<section id="field"><div class="w grid2">
+  <div>
+    <div class="en">Field survey · 26 products · Nov 2026</div>
+    <h2 class="h2">직접 사서 <span>하나씩 확인했어요.</span></h2>
+    <p class="lead">창업지원금으로 14개 브랜드 26개 제품을 사서 상자와 용기를 사진으로 확인했어요. 확인한 근거만으로 점수를 매기면 이렇게 나와요.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:28px">
+      <div class="up card"><div class="num">9<span style="font-size:18px">개</span></div><p class="ink2" style="margin:8px 0 0;font-size:14px">제3자 비건 인증 확인</p></div>
+      <div class="up card"><div class="num">12<span style="font-size:18px">개</span></div><p class="ink2" style="margin:8px 0 0;font-size:14px">비건 정보 자체가 없음</p></div>
+      <div class="up card"><div class="num">26<span style="font-size:18px">점</span></div><p class="ink2" style="margin:8px 0 0;font-size:14px">26개 평균 점수</p></div>
+      <div class="up card"><div class="num">6<span style="font-size:18px">개</span></div><p class="ink2" style="margin:8px 0 0;font-size:14px">확인할 근거가 하나도 없음</p></div>
+    </div>
+    <div class="btns"><a class="btn fill" href="app/index.html#/list">26개 전체 점수 보기</a></div>
+  </div>
+  <div style="display:flex;justify-content:center"><div class="phone"><img src="assets/img/shot_compare.jpg" alt="같은 24점 두 제품 비교 화면"></div></div>
+</div></section>
+
+<!-- 5. 동점 비교 -->
+<section style="padding-top:20px"><div class="w">
+  <div class="up card" style="padding:34px">
+    <div class="en">Same score? Here's how to choose</div>
+    <div class="serif" style="font-size:28px;margin-top:6px">둘 다 24점이라면, 뭘 고를까요?</div>
+    <p class="ink2" style="font-size:15.5px;margin:12px 0 0;max-width:760px">실제 조사한 토리든 마스크와 브링그린 아이크림은 똑같이 24점이에요. 비건을 중요하게 보면 비건 표기가 있는 토리든(사회 15점), 친환경을 중요하게 보면 FSC·SOY INK 공식 로고가 있는 브링그린(환경 30점)을 먼저 권해요. 기준을 정하지 않았다면 근거가 더 많이 확인된 쪽(4개 vs 3개)을 권해요.</p>
+    <a class="link" href="app/index.html#/compare" style="margin-top:16px">직접 비교해 보기 ›</a>
+  </div>
+</div></section>
+
+<!-- 6. 포인트·구독 -->
+<section id="points"><div class="w grid2">
+  <div>
+    <div class="en">Why we give points</div>
+    <h2 class="h2">정보를 채워 주면 <span>포인트를 드려요.</span></h2>
+    <p class="lead">'정보 없음'을 줄이려면 많은 사람이 포장 사진을 보내 줘야 해요. 포인트는 그 수고에 대한 보상이고, 바다·숲·동물 캠페인 기부나 재구매 할인에 쓸 수 있어요.</p>
+  </div>
+  <div style="display:grid;gap:16px">
+    <div class="up card" style="display:flex;gap:16px;align-items:center"><div class="lime circ" style="width:54px;height:54px;font-weight:800">+100</div><div><b>포장 사진 제보</b><p class="ink2" style="margin:2px 0 0;font-size:14px">인증 마크·재활용 표시를 찍어 보내면 확인해서 점수를 채워요.</p></div></div>
+    <div class="up card" style="display:flex;gap:16px;align-items:center"><div class="ups circ" style="width:54px;height:54px;font-weight:800;color:var(--forest)">+10</div><div><b>새 제품 스캔</b><p class="ink2" style="margin:2px 0 0;font-size:14px">어떤 제품 정보가 필요한지 알 수 있어요. 하루 5번까지.</p></div></div>
+    <div class="soft card" style="border-radius:26px"><div class="en">GreenScan Plus · coming soon</div><b style="font-size:16px">그린스캔 플러스 (정기 구독, 준비 중)</b><p class="ink2" style="margin:6px 0 0;font-size:14px">내 화장대 점검, 재구매·리뉴얼 알림, 근거가 더 많은 대체 제품 추천. 스캔·점수·근거 보기는 계속 무료예요.</p></div>
+  </div>
+</div></section>
+
+<!-- 7. FAQ -->
+<section id="faq"><div class="w" style="max-width:860px">
+  <div class="en">FAQ</div>
+  <h2 class="h2">자주 묻는 <span>질문</span></h2>
+  <details class="up" style="border-radius:22px"><summary>꼭 로그인해야 하나요? <span class="mute">＋</span></summary><p>가입 없이 3번까지 무료로 볼 수 있어요. 그다음엔 카카오·네이버로 로그인하면 계속 무료예요. 비밀번호는 저장하지 않아요.</p></details>
+  <details class="up" style="border-radius:22px"><summary>0점이면 나쁜 제품인가요? <span class="mute">＋</span></summary><p>아니요. 포장에서 확인할 근거가 없다는 뜻이에요. 그래서 '정보 없음'으로 따로 보여드리고, 사진 제보로 근거가 생기면 점수가 바뀌어요.</p></details>
+  <details class="up" style="border-radius:22px"><summary>브랜드가 돈을 내면 점수가 바뀌나요? <span class="mute">＋</span></summary><p>아니요. 광고·제휴는 점수와 상관없어요. 브랜드는 근거 자료를 내고 정정을 요청할 수만 있어요.</p></details>
+  <details class="up" style="border-radius:22px"><summary>체험판은 내 정보를 가져가나요? <span class="mute">＋</span></summary><p>아니요. 체험판은 아무것도 서버로 보내지 않아요. 카메라 영상도 기기 안에서 바코드를 읽는 데만 써요. <a class="link" href="privacy.html">개인정보 처리방침 보기</a></p></details>
+  <details class="up" style="border-radius:22px"><summary>영어로도 쓸 수 있나요? <span class="mute">＋</span></summary><p>비건 소비가 큰 해외 사용자를 위해 영어 버전을 준비하고 있어요. 지금은 화면 제목에 영어를 함께 적어 두었어요.</p></details>
+</div></section>
+
+<!-- 8. 마무리 -->
+<section style="padding-top:20px"><div class="w">
+  <div class="soft" style="border-radius:40px;padding:56px 40px;text-align:center;box-shadow:10px 12px 26px var(--sh),-8px -8px 20px var(--hi)">
+    <div class="en">Try it now</div>
+    <div class="serif" style="font-size:36px;line-height:1.3;margin-top:8px">다음에 화장품 고를 땐,<br><span class="hl">바코드부터 비춰보세요.</span></div>
+    <p class="ink2" style="font-size:16px;margin:14px 0 0">2분 체험하고, 1분 설문으로 의견을 들려주세요.</p>
+    <div class="btns" style="justify-content:center"><a class="btn fill" href="app/index.html">체험하기</a><a class="btn sec" href="app/index.html#/done">설문 참여하기</a></div>
+  </div>
+</div></section>
+
+<footer><div class="w" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px">
+  <span>© 2026 그린스캔 GreenScan · 베타 테스트 중</span>
+  <span><a href="privacy.html">개인정보 처리방침</a> · <a href="app/index.html#/criteria">점수 기준</a></span>
+</div></footer>
+</body>
+</html>
