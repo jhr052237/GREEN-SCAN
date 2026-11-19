@@ -7,7 +7,8 @@
 
   // ───────── 설정 (구글폼 '체험 연결용 링크'를 받으면 여기에 넣기, VARIANT 자리에 체험 코드가 들어가요)
   var CFG = {
-    FORM_PREFILL: '',
+    FORM_PREFILL: 'https://docs.google.com/forms/d/e/1FAIpQLSexvQyWUABNynciclQgYXIoGpo6T-z8-jQ-8pYjpklHF4S6Fg/viewform?usp=pp_url&entry.2093933943=%EB%84%A4,+%EC%B2%B4%ED%97%98%ED%95%B4+%EB%B4%A4%EC%96%B4%EC%9A%94&entry.557099612=VARIANT',
+    FORM_PUBLIC: 'https://forms.gle/UNoDptDcptEePu118',
     FREE_SCANS: 3
   };
 
